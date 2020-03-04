@@ -12,20 +12,20 @@ import {selectors, actions} from '@neos-project/neos-ui-redux-store';
 @connect($transform({
     node: selectors.CR.Nodes.focusedSelector
 }), {
-    commenceNodeRemoval: actions.CR.Nodes.commenceRemoval
+    paste: actions.CR.Nodes.paste
 })
-export default class DeleteSelectedNode extends PureComponent {
+export default class PasteSelectedNode extends PureComponent {
     static propTypes = {
         node: PropTypes.object,
         className: PropTypes.string,
-        commenceNodeRemoval: PropTypes.func.isRequired,
+        commitPaste: PropTypes.func.isRequired,
         disabled: PropTypes.bool.isRequired,
         i18nRegistry: PropTypes.object.isRequired
     };
 
-    handleDeleteSelectedNodeClick = () => {
-        const {node, commenceNodeRemoval} = this.props;
-        commenceNodeRemoval($get('contextPath', node));
+    handlePasteSelectedNodeClick = () => {
+        const {node, paste} = this.props;
+        paste($get('contextPath', node));
     };
 
     render() {
@@ -35,10 +35,10 @@ export default class DeleteSelectedNode extends PureComponent {
             <IconButton
                 className={className}
                 disabled={disabled}
-                onClick={this.handleDeleteSelectedNodeClick}
-                icon="trash"
+                onClick={this.handlePasteSelectedNodeClick}
+                icon="paste"
                 hoverStyle="clean"
-                title={i18nRegistry.translate('delete')}
+                title={i18nRegistry.translate('paste')}
             />
         );
     }

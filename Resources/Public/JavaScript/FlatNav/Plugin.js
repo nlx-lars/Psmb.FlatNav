@@ -797,6 +797,14 @@ var _RefreshNodes = __webpack_require__(25);
 
 var _RefreshNodes2 = _interopRequireDefault(_RefreshNodes);
 
+var _CopySelectedNode = __webpack_require__(26);
+
+var _CopySelectedNode2 = _interopRequireDefault(_CopySelectedNode);
+
+var _PasteSelectedNode = __webpack_require__(27);
+
+var _PasteSelectedNode2 = _interopRequireDefault(_PasteSelectedNode);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -855,6 +863,22 @@ var FlatNav = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry) {
             var nodeTypeName = (0, _plowJs.$get)('nodeType', node);
 
             if (nodeTypeName === _this.props.preset.newNodeType) {
+                _this.refreshFlatNav();
+            }
+        }, _this.handleNodeWasUpdated = function (feedbackPayload) {
+            var nodes = Object.values(feedbackPayload.byContextPath);
+
+            var refreshNav = nodes.some(function (node) {
+                return (0, _plowJs.$get)('nodeType', node) === _this.props.preset.newNodeType;
+            });
+
+            if (refreshNav) {
+                _this.refreshFlatNav();
+            }
+        }, _this.handleNodeWasRemoved = function (feedbackPayload) {
+            var contextPath = feedbackPayload.contextPath;
+
+            if (_this.props.nodes.includes(contextPath)) {
                 _this.refreshFlatNav();
             }
         }, _this.buildNewReferenceNodePath = function () {
@@ -918,6 +942,8 @@ var FlatNav = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry) {
         value: function componentDidMount() {
             this.populateTheState();
             this.props.serverFeedbackHandlers.set('Neos.Neos.Ui:NodeCreated/DocumentAdded', this.handleNodeWasCreated, 'after Neos.Neos.Ui:NodeCreated/Main');
+            this.props.serverFeedbackHandlers.set('Neos.Neos.Ui:UpdateNodeInfo/Test1234', this.handleNodeWasUpdated, 'after Neos.Neos.Ui:UpdateNodeInfo/Main');
+            this.props.serverFeedbackHandlers.set('Neos.Neos.Ui:RemoveNode/Test1256', this.handleNodeWasRemoved, 'after Neos.Neos.Ui:RemoveNode/Main');
         }
     }, {
         key: 'componentDidUpdate',
@@ -975,6 +1001,8 @@ var FlatNav = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry) {
                     { className: _style2.default.toolbar },
                     _react2.default.createElement(_reactUiComponents.IconButton, { icon: 'plus', disabled: isLoadingReferenceNodePath, onClick: this.createNode }),
                     _react2.default.createElement(_HideSelectedNode2.default, { disabled: !focusedInNodes }),
+                    _react2.default.createElement(_CopySelectedNode2.default, { disabled: !focusedInNodes }),
+                    _react2.default.createElement(_PasteSelectedNode2.default, { disabled: !focusedInNodes }),
                     _react2.default.createElement(_DeleteSelectedNode2.default, { disabled: !focusedInNodes }),
                     _react2.default.createElement(_RefreshNodes2.default, { disabled: isLoading || isLoadingReferenceNodePath, onClick: this.refreshFlatNav })
                 ),
@@ -1932,6 +1960,212 @@ var RefreshNodes = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
     i18nRegistry: _propTypes2.default.object.isRequired
 }, _temp2)) || _class);
 exports.default = RefreshNodes;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dec, _dec2, _class, _class2, _temp2;
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(7);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactRedux = __webpack_require__(5);
+
+var _plowJs = __webpack_require__(4);
+
+var _neosUiDecorators = __webpack_require__(3);
+
+var _reactUiComponents = __webpack_require__(2);
+
+var _neosUiReduxStore = __webpack_require__(6);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CopySelectedNode = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry) {
+    return {
+        i18nRegistry: globalRegistry.get('i18n')
+    };
+}), _dec2 = (0, _reactRedux.connect)((0, _plowJs.$transform)({
+    node: _neosUiReduxStore.selectors.CR.Nodes.focusedSelector
+}), {
+    copy: _neosUiReduxStore.actions.CR.Nodes.copy
+}), _dec(_class = _dec2(_class = (_temp2 = _class2 = function (_PureComponent) {
+    _inherits(CopySelectedNode, _PureComponent);
+
+    function CopySelectedNode() {
+        var _ref;
+
+        var _temp, _this, _ret;
+
+        _classCallCheck(this, CopySelectedNode);
+
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = CopySelectedNode.__proto__ || Object.getPrototypeOf(CopySelectedNode)).call.apply(_ref, [this].concat(args))), _this), _this.handleCopySelectedNodeClick = function () {
+            var _this$props = _this.props,
+                node = _this$props.node,
+                copy = _this$props.copy;
+
+            copy((0, _plowJs.$get)('contextPath', node));
+        }, _temp), _possibleConstructorReturn(_this, _ret);
+    }
+
+    _createClass(CopySelectedNode, [{
+        key: 'render',
+        value: function render() {
+            var _props = this.props,
+                className = _props.className,
+                disabled = _props.disabled,
+                i18nRegistry = _props.i18nRegistry;
+
+
+            return _react2.default.createElement(_reactUiComponents.IconButton, {
+                className: className,
+                disabled: disabled,
+                onClick: this.handleCopySelectedNodeClick,
+                icon: 'copy',
+                hoverStyle: 'clean',
+                title: i18nRegistry.translate('copy')
+            });
+        }
+    }]);
+
+    return CopySelectedNode;
+}(_react.PureComponent), _class2.propTypes = {
+    node: _propTypes2.default.object,
+    className: _propTypes2.default.string,
+    copy: _propTypes2.default.func.isRequired,
+    disabled: _propTypes2.default.bool.isRequired,
+    i18nRegistry: _propTypes2.default.object.isRequired
+}, _temp2)) || _class) || _class);
+exports.default = CopySelectedNode;
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dec, _dec2, _class, _class2, _temp2;
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(7);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactRedux = __webpack_require__(5);
+
+var _plowJs = __webpack_require__(4);
+
+var _neosUiDecorators = __webpack_require__(3);
+
+var _reactUiComponents = __webpack_require__(2);
+
+var _neosUiReduxStore = __webpack_require__(6);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PasteSelectedNode = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry) {
+    return {
+        i18nRegistry: globalRegistry.get('i18n')
+    };
+}), _dec2 = (0, _reactRedux.connect)((0, _plowJs.$transform)({
+    node: _neosUiReduxStore.selectors.CR.Nodes.focusedSelector
+}), {
+    paste: _neosUiReduxStore.actions.CR.Nodes.paste
+}), _dec(_class = _dec2(_class = (_temp2 = _class2 = function (_PureComponent) {
+    _inherits(PasteSelectedNode, _PureComponent);
+
+    function PasteSelectedNode() {
+        var _ref;
+
+        var _temp, _this, _ret;
+
+        _classCallCheck(this, PasteSelectedNode);
+
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = PasteSelectedNode.__proto__ || Object.getPrototypeOf(PasteSelectedNode)).call.apply(_ref, [this].concat(args))), _this), _this.handlePasteSelectedNodeClick = function () {
+            var _this$props = _this.props,
+                node = _this$props.node,
+                paste = _this$props.paste;
+
+            paste((0, _plowJs.$get)('contextPath', node));
+        }, _temp), _possibleConstructorReturn(_this, _ret);
+    }
+
+    _createClass(PasteSelectedNode, [{
+        key: 'render',
+        value: function render() {
+            var _props = this.props,
+                className = _props.className,
+                disabled = _props.disabled,
+                i18nRegistry = _props.i18nRegistry;
+
+
+            return _react2.default.createElement(_reactUiComponents.IconButton, {
+                className: className,
+                disabled: disabled,
+                onClick: this.handlePasteSelectedNodeClick,
+                icon: 'paste',
+                hoverStyle: 'clean',
+                title: i18nRegistry.translate('paste')
+            });
+        }
+    }]);
+
+    return PasteSelectedNode;
+}(_react.PureComponent), _class2.propTypes = {
+    node: _propTypes2.default.object,
+    className: _propTypes2.default.string,
+    commitPaste: _propTypes2.default.func.isRequired,
+    disabled: _propTypes2.default.bool.isRequired,
+    i18nRegistry: _propTypes2.default.object.isRequired
+}, _temp2)) || _class) || _class);
+exports.default = PasteSelectedNode;
 
 /***/ })
 /******/ ]);

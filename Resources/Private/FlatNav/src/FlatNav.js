@@ -10,6 +10,9 @@ import DeleteSelectedNode from './DeleteSelectedNode';
 import mergeClassNames from 'classnames';
 import style from './style.css';
 import RefreshNodes from "./RefreshNodes";
+import CopySelectedNode from "./CopySelectedNode";
+import PasteSelectedNode from "./PasteSelectedNode";
+
 @neos(globalRegistry => ({
     nodeTypesRegistry: globalRegistry.get('@neos-project/neos-ui-contentrepository'),
     serverFeedbackHandlers: globalRegistry.get('serverFeedbackHandlers'),
@@ -43,6 +46,8 @@ export default class FlatNav extends Component {
     componentDidMount() {
         this.populateTheState();
         this.props.serverFeedbackHandlers.set('Neos.Neos.Ui:NodeCreated/DocumentAdded', this.handleNodeWasCreated, 'after Neos.Neos.Ui:NodeCreated/Main');
+        this.props.serverFeedbackHandlers.set('Neos.Neos.Ui:UpdateNodeInfo/Test1234', this.handleNodeWasUpdated, 'after Neos.Neos.Ui:UpdateNodeInfo/Main');
+        this.props.serverFeedbackHandlers.set('Neos.Neos.Ui:RemoveNode/Test1256', this.handleNodeWasRemoved, 'after Neos.Neos.Ui:RemoveNode/Main');
     }
 
     componentDidUpdate(prevProps) {
@@ -66,7 +71,25 @@ export default class FlatNav extends Component {
         if (nodeTypeName === this.props.preset.newNodeType) {
             this.refreshFlatNav();
         }
-    }
+    };
+
+    handleNodeWasUpdated = feedbackPayload => {
+        const nodes = Object.values(feedbackPayload.byContextPath);
+
+        const refreshNav = nodes.some(node => $get('nodeType', node) === this.props.preset.newNodeType);
+
+        if (refreshNav) {
+            this.refreshFlatNav();
+        }
+    };
+
+    handleNodeWasRemoved = feedbackPayload => {
+        const contextPath = feedbackPayload.contextPath;
+
+        if (this.props.nodes.includes(contextPath)) {
+            this.refreshFlatNav();
+        }
+    };
 
     buildNewReferenceNodePath = () => {
         const context = this.props.siteNodeContextPath.split('@')[1];
@@ -76,11 +99,11 @@ export default class FlatNav extends Component {
     createNode = () => {
         const contextPath = this.buildNewReferenceNodePath();
         this.props.commenceNodeCreation(contextPath, undefined, 'into', this.props.preset.newNodeType || undefined);
-    }
+    };
 
     refreshFlatNav = () => {
         this.props.resetNodes(this.props.fetchNodes);
-    }
+    };
 
     getNodeIconComponent(node) {
         const nodeTypeName = $get('nodeType', node);
@@ -170,6 +193,8 @@ export default class FlatNav extends Component {
                 <div className={style.toolbar}>
                     <IconButton icon="plus" disabled={isLoadingReferenceNodePath} onClick={this.createNode}/>
                     <HideSelectedNode disabled={!focusedInNodes}/>
+                    <CopySelectedNode disabled={!focusedInNodes}/>
+                    <PasteSelectedNode disabled={!focusedInNodes}/>
                     <DeleteSelectedNode disabled={!focusedInNodes}/>
                     <RefreshNodes disabled={isLoading || isLoadingReferenceNodePath} onClick={this.refreshFlatNav}/>
                 </div>
